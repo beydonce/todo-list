@@ -1,18 +1,12 @@
 const express = require('express');
 const router = express.Router();
 
-// In-memory fake DB (you'll replace this with a real DB later)
-let tasks = [
-  { id: 1, title: 'Learn Express routes', done: false },
-  { id: 2, title: 'Build To-Do App', done: true }
-];
 
-// ✅ GET all tasks
-router.get('/', (req, res) => {
-  res.json(tasks);
+
+router.get('/folder', (req, res) => {
+  
 });
 
-// ✅ POST a new task
 router.post('/', (req, res) => {
   const { title } = req.body;
   const newTask = { id: Date.now(), title, done: false };

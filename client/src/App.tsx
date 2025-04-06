@@ -1,35 +1,27 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import './App.css';
+import Create from './components/createFolder';
+import Show from './components/showFolder';
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+export interface Folder {
+  title: string;
 }
 
-export default App
+type View = 'create folder' | 'all folders';
+
+function App() {
+  const [mode, setMode] = useState<View>('all folders');
+
+  return (
+    <div>
+      <button onClick={() => setMode('create folder')}>Create Folder</button>
+      <button onClick={() => setMode('all folders')}>All Folders</button>
+  
+      {mode === 'create folder' && <Create />} 
+      {mode === 'all folders' && <Show />}
+    </div>
+  );
+  
+}
+
+export default App;

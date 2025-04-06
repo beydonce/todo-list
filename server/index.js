@@ -1,20 +1,21 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
+const mongoose = require('mongoose');
+const foldersRoute = require('./routes/foldersRoute');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
+app.use('/api', foldersRoute);
 
-// Example route
-app.get('/api/tasks', (req, res) => {
-  res.json([
-    { id: 1, title: 'Learn CI/CD', done: false },
-    { id: 2, title: 'Build full stack app', done: true },
-  ]);
-});
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}).then(() => console.log('✅ Connected to MongoDB'))
+  .catch((err) => console.error('❌ MongoDB connection error:', err));
 
 app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`);
