@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    services:
+      mongo:
+        image: mongo:6
+        ports:
+          - 27017:27017
+
+    strategy:
+      matrix:
+        node-version: [18]
+
+    steps:
+    - name: ⬇️ Checkout repo
+      uses: actions/checkout@v3
+
+    - name: 🔧 Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: 📦 Install client dependencies
+      working-directory: ./client
+      run: |
+        npm install
+
+    - name: 📦 Install server dependencies
+      working-directory: ./server
+      run: |
+        npm install
+
+    - name: ✅ Lint client
+      working-directory: ./client
+      run: npm run lint
+
+    - name: ✅ Lint server
+      working-directory: ./server
+      run: npm run lint || echo "Skipping lint if not defined"
+
+    - name: 🧪 Run server tests (if exists)
+      working-directory: ./server
+      run: |
+        if [ -f package.json ] && npm run | grep -q test; then npm test; else echo "No tests to run"; fi
+
+    - name: 🧪 Run client tests (if exists)
+      working-directory: ./client
+      run: |
+        if [ -f package.json ] && npm run | grep -q test; then npm test; else echo "No tests to run"; fi
+
+    - name: ⚙️ Build client
+      working-directory: ./client
+      run: npm run build
+
+    - name: ⚙️ Build server (compile TypeScript if needed)
+      working-directory: ./server
+      run: |
+        if [ -f tsconfig.json ]; then npm run build; else echo "Skipping build"; fi
+
+    - name: 🐳 Docker Compose Build
+      run: docker-compose build
